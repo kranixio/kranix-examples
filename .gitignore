@@ -1,0 +1,50 @@
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+
+# Local configuration files (may contain sensitive data)
+.kranix/
+config/local.yaml
+*.env
+.env.local
+
+# Build artifacts
+dist/
+build/
+bin/
+
+# Node modules (for examples that use Node.js)
+node_modules/
+
+# Python cache (for examples that use Python)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+
+# Go modules (for examples that use Go)
+go.sum
+
+# Test coverage
+coverage/
+*.cover
+
+# Kind clusters (for k8s examples)
+.kube/
+
+# Docker volumes and local data
+data/
+volumes/
