@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Kranix IDP — self-service deploy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Internal developer portal</h1>
+      <p class="sub">
+        Deploy pre-approved workloads through <code>kranix-api</code> — no kubectl required.
+      </p>
+    </header>
+
+    <main>
+      <section>
+        <h2>Namespaces</h2>
+        <button type="button" id="refresh-ns">Refresh</button>
+        <pre id="namespaces-out">Loading…</pre>
+      </section>
+
+      <section>
+        <h2>Deploy workload</h2>
+        <form id="deploy-form">
+          <label>Name <input name="name" required placeholder="my-app" /></label>
+          <label
+            >Namespace
+            <input name="namespace" required placeholder="default"
+          /></label>
+          <label>Image <input name="image" required placeholder="nginx:latest" /></label>
+          <label>Replicas <input name="replicas" type="number" min="1" value="1" /></label>
+          <label>Backend <input name="backend" value="docker" /></label>
+          <button type="submit">Deploy</button>
+        </form>
+        <pre id="deploy-out"></pre>
+      </section>
+
+      <section>
+        <h2>Workloads in namespace</h2>
+        <label
+          >Filter
+          <input id="list-namespace" placeholder="default" value="default"
+        /></label>
+        <button type="button" id="list-wl">List</button>
+        <pre id="workloads-out"></pre>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Swap the BFF in <code>server.mjs</code> for
+        <code>@kranix-io/sdk</code> from <code>kranix-packages</code> when you want typed
+        clients.
+      </p>
+    </footer>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

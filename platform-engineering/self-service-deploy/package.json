@@ -1,0 +1,13 @@
+{
+  "name": "kranix-idp-self-service-portal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal internal developer portal on kranix-api (IDP pattern)",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}

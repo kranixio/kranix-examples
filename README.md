@@ -29,11 +29,12 @@ kranix-examples/
 │
 ├── platform-engineering/         # IDP and platform patterns
 │   ├── namespace-per-team/       # Isolated namespaces with KranixPolicy
-│   ├── self-service-deploy/      # Developer self-service via kranix-api
+│   ├── self-service-deploy/      # IDP developer portal (Express BFF + kranix-api)
 │   └── policy-enforcement/       # Resource limits and network policy
 │
 ├── observability/                # Monitoring and debugging
 │   ├── ai-failure-analysis/      # krane analyze in a real crash scenario
+│   ├── ai-oncall-pagerduty/      # PagerDuty webhooks → kranix incident runbooks (agent flow)
 │   ├── log-streaming/            # Real-time log aggregation example
 │   └── cluster-health-dashboard/ # Health dashboard using kranix-api
 │
@@ -44,7 +45,7 @@ kranix-examples/
 │
 └── reference-architectures/      # Full production-grade blueprints
     ├── microservices-platform/   # Multi-service app with GitOps + MCP ops
-    ├── ml-inference-platform/    # GPU workloads + AI agent orchestration
+    ├── ml-inference-platform/    # GPU inference + analytics latency agent (+ k8s path)
     └── edge-cluster-ops/         # Remote node management at the edge
 ```
 
@@ -162,9 +163,9 @@ Three teams, three namespaces, one cluster. Each namespace has a `KranixPolicy` 
 ---
 
 #### `platform-engineering/self-service-deploy`
-A minimal internal developer portal (HTML + JS) that calls `kranix-api` directly, allowing developers to deploy pre-approved workloads to their own namespace without needing `kubectl` or CLI access.
+**IDP self-service portal:** minimal **internal developer platform** UI (Express + static HTML) that proxies **`kranix-api`** for namespace listing and workload deploys — the same integration pattern as Backstage or an internal Next app, without kubectl.
 
-**What you'll use:** `kranix-api`, `kranix-packages` (TypeScript SDK)
+**What you'll use:** `kranix-api` or `kranix-mock-api`, Node.js — optionally replace raw `fetch` with **`@kranix-io/sdk`** from **`kranix-packages`**
 
 ---
 
@@ -176,6 +177,13 @@ Demonstrates how `KranixPolicy` blocks a non-compliant workload (missing resourc
 ---
 
 ### Observability
+
+#### `observability/ai-oncall-pagerduty`
+**PagerDuty → Kranix on-call:** a webhook bridge maps incidents to **`/api/v1/incident/runbooks/{id}/execute`**, matching the incident API in **`kranix-api`**. Includes a PagerDuty-shaped HTTP receiver plus a dry-run agent script; use **`kranix-mock-api`** for a seeded playbook (`rb-oncall-pagerduty`).
+
+**What you'll use:** `kranix-api` or `kranix-mock-api`, Python, optional **`kranix-mcp`** for LLM-driven remediation
+
+---
 
 #### `observability/ai-failure-analysis`
 A simulated crash scenario (OOMKilled, CrashLoopBackOff, missing ConfigMap). Runs `kranix analyze` against each and shows the structured output: crash reason, probable fix, resource recommendation, and generated patch.
@@ -231,9 +239,9 @@ A production-grade reference: five microservices, GitOps-managed via `KranixApp`
 ---
 
 #### `reference-architectures/ml-inference-platform`
-A machine learning inference platform: model server deployment, GPU workload scheduling, health-gated rollouts for new model versions, and an AI agent that monitors inference latency and triggers rollback when thresholds are breached.
+**ML inference platform:** deploy **`WorkloadSpec` with `resources.gpu`**, record **inference latency** via **`POST /api/v1/analytics/metrics`**, and run a Python **latency agent** against **`GET /api/v1/analytics/workloads/{id}?type=latency`**. Includes a **local mock** path (`make run-local` + `kranix-mock-api`) and a **Kubernetes/KServe** path for real clusters.
 
-**Components:** `kranix-core`, `kranix-mcp`, `kranix-operator`, KServe integration
+**Components:** `kranix-api`, `kranix-packages` (types + mock), optional `kranix-mcp` for natural-language ops
 
 ---
 

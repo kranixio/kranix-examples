@@ -1,0 +1,24 @@
+{
+  "name": "llm-inference",
+  "namespace": "inference",
+  "image": "ghcr.io/your-org/model-server:v1.2.0",
+  "replicas": 2,
+  "backend": "kubernetes",
+  "resources": {
+    "cpuRequest": "2",
+    "cpuLimit": "4",
+    "memoryRequest": "8Gi",
+    "memoryLimit": "16Gi",
+    "gpu": {
+      "vendor": "nvidia",
+      "count": 1,
+      "type": "L4",
+      "memory": "24Gi"
+    }
+  },
+  "ports": [{ "name": "http", "containerPort": 8080, "protocol": "tcp" }],
+  "env": {
+    "MODEL_NAME": "production-classifier",
+    "MAX_BATCH": "8"
+  }
+}
