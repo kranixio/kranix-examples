@@ -1,0 +1,26 @@
+# Sample: primary stack on AWS (EKS).
+# Replace with your KranixApp / Helm values; keep labels consistent for GitOps promotion.
+#
+# metadata:
+#   labels:
+#     kranix.io/cloud: aws
+#     kranix.io/role: primary
+#     kranix.io/app: payments-api
+#
+# spec:
+#   image: your-registry/payments-api:v1.4.0
+#   replicas: 3
+#   backend: kubernetes
+#   resources:
+#     cpuRequest: "500m"
+#     memoryRequest: "512Mi"
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kranix-multi-cloud-primary-aws-notes
+  namespace: default
+data:
+  README: |
+    Map this to your real Kranix workload or KranixApp CRD.
+    Example API body: see ../workload-api-primary.aws.json

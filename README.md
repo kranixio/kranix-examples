@@ -20,6 +20,7 @@ kranix-examples/
 │   ├── claude-deploy-app/        # Claude deploys and monitors a workload
 │   ├── claude-debug-crash/       # Claude analyzes and fixes a failing pod
 │   ├── gpt-cluster-ops/          # GPT-4 operating a namespace via MCP
+│   ├── cost-optimization-agent/  # Cost + rightsizing via kranix-api
 │   └── custom-mcp-agent/         # Build your own MCP-compatible agent
 │
 ├── gitops/                       # GitOps workflows with KranixApp CRDs
@@ -30,6 +31,7 @@ kranix-examples/
 ├── platform-engineering/         # IDP and platform patterns
 │   ├── namespace-per-team/       # Isolated namespaces with KranixPolicy
 │   ├── self-service-deploy/      # IDP developer portal (Express BFF + kranix-api)
+│   ├── backstage-kranix-plugin/  # Backstage integration + catalog preview UI
 │   └── policy-enforcement/       # Resource limits and network policy
 │
 ├── observability/                # Monitoring and debugging
@@ -46,6 +48,7 @@ kranix-examples/
 └── reference-architectures/      # Full production-grade blueprints
     ├── microservices-platform/   # Multi-service app with GitOps + MCP ops
     ├── ml-inference-platform/    # GPU inference + analytics latency agent (+ k8s path)
+    ├── multi-cloud-failover/     # AWS ↔ GCP workload failover pattern + drill
     └── edge-cluster-ops/         # Remote node management at the edge
 ```
 
@@ -111,6 +114,13 @@ GPT-4 connects via the HTTP/SSE transport of `kranix-mcp` and performs a full op
 
 ---
 
+#### `ai-agents/cost-optimization-agent`
+**Cost optimization:** reads **`GET /api/v1/cost/summary`** and per-workload **`/cost`**, detects **over-provisioned** CPU in the mock or real API, and optionally **`PATCH`**es **`WorkloadSpec.resources`** with recommended requests/limits (`RIGHTSIZING_DRY_RUN` for safe demos).
+
+**What you'll use:** `kranix-api` or **`kranix-mock-api`** (cost model in **`kranix-packages`**), Python
+
+---
+
 #### `ai-agents/custom-mcp-agent`
 A minimal Python script that implements an MCP client and connects to `kranix-mcp`. Shows the raw MCP protocol flow — tool discovery, tool call, result handling — without relying on Claude or GPT.
 
@@ -166,6 +176,13 @@ Three teams, three namespaces, one cluster. Each namespace has a `KranixPolicy` 
 **IDP self-service portal:** minimal **internal developer platform** UI (Express + static HTML) that proxies **`kranix-api`** for namespace listing and workload deploys — the same integration pattern as Backstage or an internal Next app, without kubectl.
 
 **What you'll use:** `kranix-api` or `kranix-mock-api`, Node.js — optionally replace raw `fetch` with **`@kranix-io/sdk`** from **`kranix-packages`**
+
+---
+
+#### `platform-engineering/backstage-kranix-plugin`
+**Backstage plugin pattern:** proxy + catalog annotations for **`kranix-api`**, plus a **Vite React “catalog preview”** UI (`preview-ui/`) you can build without a full Backstage monorepo — copy the fetch logic into a real plugin package later.
+
+**What you'll use:** Backstage (production), or `npm run build` in `preview-ui/` for a standalone table of workloads
 
 ---
 
@@ -242,6 +259,13 @@ A production-grade reference: five microservices, GitOps-managed via `KranixApp`
 **ML inference platform:** deploy **`WorkloadSpec` with `resources.gpu`**, record **inference latency** via **`POST /api/v1/analytics/metrics`**, and run a Python **latency agent** against **`GET /api/v1/analytics/workloads/{id}?type=latency`**. Includes a **local mock** path (`make run-local` + `kranix-mock-api`) and a **Kubernetes/KServe** path for real clusters.
 
 **Components:** `kranix-api`, `kranix-packages` (types + mock), optional `kranix-mcp` for natural-language ops
+
+---
+
+#### `reference-architectures/multi-cloud-failover`
+**Multi-cloud failover:** GitOps-friendly **AWS (EKS) + GCP (GKE)** layout, shared labels (`kranix.io/cloud`, `kranix.io/role`), and a **`failover-drill.sh`** script that deploys against **`kranix-mock-api`** and **PATCH**es workload metadata to simulate promotion to the standby region.
+
+**Components:** `kranix-api`, `kranix-packages` (mock + types), optional DNS / GLB in your cloud account
 
 ---
 

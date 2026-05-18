@@ -1,0 +1,10 @@
+# Snippet — merge under `proxy:` in app-config.yaml (Backstage 1.x+)
+#
+# Then call from frontend: fetch('/api/proxy/kranix/api/v1/workloads?namespace=default')
+
+'/kranix':
+  target: ${KRANIX_API_URL:-http://127.0.0.1:8080}
+  allowedMethods: ['GET', 'POST', 'PATCH', 'DELETE']
+  allowedHeaders: ['Authorization', 'Content-Type']
+  headers:
+    Authorization: ${KRANIX_API_TOKEN}

@@ -1,0 +1,17 @@
+# Sample: standby on GCP (GKE) — same artifact, reduced replicas until promotion.
+#
+# metadata:
+#   labels:
+#     kranix.io/cloud: gcp
+#     kranix.io/role: standby
+#     kranix.io/app: payments-api
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kranix-multi-cloud-standby-gcp-notes
+  namespace: default
+data:
+  README: |
+    Keep image digest aligned with primary via CI promotion.
+    Example API body: ../workload-api-standby.gcp.json
