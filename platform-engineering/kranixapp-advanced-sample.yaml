@@ -1,0 +1,33 @@
+# Example KranixApp manifest demonstrating priority tiers, spot-friendly scheduling,
+# and cross-namespace network policies (applied by kranix-runtime on Kubernetes targets).
+#
+# Prerequisites:
+# - Install Helm priority classes via charts/kranix (priorityClasses.enabled) or kubectl apply equivalent.
+#
+apiVersion: kranix.io/v1alpha1
+kind: KranixApp
+metadata:
+  name: payments-api
+spec:
+  image: ghcr.io/kranix-io/payments:latest
+  replicas: 3
+  namespace: payments
+  resources:
+    cpu: "250m"
+    memory: "512Mi"
+  scheduling:
+    workloadPriority: critical
+    preemptionEnabled: true
+    spot:
+      enabled: true
+      rescheduleOnNodeTermination: true
+    tolerations:
+      - key: "eks.amazonaws.com/capacityType"
+        operator: Equal
+        value: SPOT
+        effect: NoSchedule
+  crossNamespaceTraffic:
+    enabled: true
+    allowedIngressNamespaces: ["istio-system"]
+    allowedEgressNamespaces: ["payments", "auth"]
+    allowEgressInternet: true
